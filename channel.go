@@ -23,7 +23,7 @@ type Config struct {
 	//最大空闲连接
 	MaxIdle int
 	//生成连接的方法
-	Factory func() (interface{}, error)
+	Factory func(p Pool) (interface{}, error)
 	//关闭连接的方法
 	Close func(interface{}) error
 	//检查连接是否有效的方法
@@ -80,7 +80,7 @@ func NewChannelPool(poolConfig *Config) (Pool, error) {
 	}
 
 	for i := 0; i < poolConfig.InitialCap; i++ {
-		conn, err := c.factory()
+		conn, err := c.factory(c)
 		if err != nil {
 			c.Release()
 			return nil, fmt.Errorf("factory is not able to fill the pool: %s", err)
