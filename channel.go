@@ -40,7 +40,7 @@ type connReq struct {
 type channelPool struct {
 	mu                       sync.RWMutex
 	conns                    chan *idleConn
-	factory                  func() (interface{}, error)
+	factory                  func(p Pool) (interface{}, error)
 	close                    func(interface{}) error
 	ping                     func(interface{}) error
 	idleTimeout, waitTimeOut time.Duration
@@ -151,7 +151,7 @@ func (c *channelPool) Get() (interface{}, error) {
 				c.mu.Unlock()
 				return nil, ErrClosed
 			}
-			conn, err := c.factory()
+			conn, err := c.factory(c)
 			if err != nil {
 				c.mu.Unlock()
 				return nil, err
